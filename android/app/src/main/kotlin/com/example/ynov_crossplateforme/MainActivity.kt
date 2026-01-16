@@ -1,4 +1,4 @@
-package com.example.ynov_crossplateforme
+package com.example.macen
 
 import io.flutter.embedding.android.FlutterActivity
 
