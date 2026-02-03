@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
@@ -52,9 +53,7 @@ class _GameScreenState extends State<GameScreen> {
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const ResultScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const ResultScreen()),
           );
         }
       });
@@ -76,9 +75,7 @@ class _GameScreenState extends State<GameScreen> {
           final session = gameProvider.currentSession;
 
           if (session == null) {
-            return const Center(
-              child: Text('Aucune session active'),
-            );
+            return const Center(child: Text('Aucune session active'));
           }
 
           // Check if profiles are available
@@ -87,26 +84,16 @@ class _GameScreenState extends State<GameScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     'Aucun profil disponible',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 20, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Impossible de charger les données',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[500]),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -118,8 +105,9 @@ class _GameScreenState extends State<GameScreen> {
             );
           }
 
-          // Calculate number of cards to display (max 2, but not more than available)
-          final int numberOfCardsToDisplay = session.profiles.length > 1 ? 2 : 1;
+          final int remainingCards =
+              session.profiles.length - session.currentIndex;
+          final int numberOfCardsToDisplay = math.min(4, remainingCards);
 
           return SafeArea(
             child: Column(
@@ -172,36 +160,43 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 // Card swiper
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: CardSwiper(
-                      controller: _controller,
-                      cardsCount: session.profiles.length,
-                      numberOfCardsDisplayed: numberOfCardsToDisplay,
-                      backCardOffset: const Offset(0, 40),
-                      padding: const EdgeInsets.all(24.0),
-                      onSwipe: (previousIndex, currentIndex, direction) {
-                        ProfileType? answer;
-                        if (direction == CardSwiperDirection.left) {
-                          answer = ProfileType.interpol;
-                        } else if (direction == CardSwiperDirection.right) {
-                          answer = ProfileType.linkedin;
-                        }
+                  child: remainingCards == 0
+                      ? const SizedBox.shrink()
+                      : CardSwiper(
+                          controller: _controller,
+                          cardsCount: session.profiles.length,
+                          numberOfCardsDisplayed: numberOfCardsToDisplay,
+                          backCardOffset: const Offset(0, 40),
+                          padding: const EdgeInsets.all(24.0),
+                          onSwipe: (previousIndex, currentIndex, direction) {
+                            ProfileType? answer;
+                            if (direction == CardSwiperDirection.left) {
+                              answer = ProfileType.interpol;
+                            } else if (direction == CardSwiperDirection.right) {
+                              answer = ProfileType.linkedin;
+                            }
 
-                        if (answer != null) {
-                          _handleSwipe(context, answer);
-                        }
+                            if (answer != null) {
+                              _handleSwipe(context, answer);
+                            }
 
-                        return true;
-                      },
-                      cardBuilder: (context, index, percentThresholdX,
-                          percentThresholdY) {
-                        return ProfileCard(
-                          profile: session.profiles[index],
-                        );
-                      },
-                    ),
-                  ),
+                            return true;
+                          },
+                          cardBuilder:
+                              (
+                                context,
+                                index,
+                                percentThresholdX,
+                                percentThresholdY,
+                              ) {
+                                return Align(
+                                  alignment: .topCenter,
+                                  child: ProfileCard(
+                                    profile: session.profiles[index],
+                                  ),
+                                );
+                              },
+                        ),
                 ),
                 // Buttons
                 Padding(
@@ -270,13 +265,7 @@ class _ScoreItem extends StatelessWidget {
             color: AppConstants.textColor,
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -316,10 +305,7 @@ class _AnswerButton extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),
