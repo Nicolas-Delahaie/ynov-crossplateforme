@@ -215,7 +215,7 @@ class _GameScreenState extends State<GameScreen> {
                           icon: Icons.warning,
                           onPressed: () {
                             _handleSwipe(context, ProfileType.interpol);
-                            _controller.swipe();
+                            _controller.swipe(.left);
                           },
                         ),
                       ),
@@ -227,7 +227,7 @@ class _GameScreenState extends State<GameScreen> {
                           icon: Icons.business_center,
                           onPressed: () {
                             _handleSwipe(context, ProfileType.linkedin);
-                            _controller.swipe();
+                            _controller.swipe(.right);
                           },
                         ),
                       ),
